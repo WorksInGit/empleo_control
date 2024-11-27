@@ -1,5 +1,9 @@
 import 'package:empleo_control/controllers/drawer_controller.dart';
+import 'package:empleo_control/views/dashboard/admin_companies.dart';
+import 'package:empleo_control/views/dashboard/admin_denied.dart';
+import 'package:empleo_control/views/dashboard/admin_jobs.dart';
 import 'package:empleo_control/views/dashboard/admin_profile.dart';
+import 'package:empleo_control/views/dashboard/admin_request.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -259,7 +263,7 @@ class CustomDrawer extends StatelessWidget {
                       ),
                       ListTile(
                         onTap: () {
-                          controller.closeDrawer();
+                          Get.to(() => AdminRequest());
                         },
                         leading: Icon(Iconsax.message_question5,
                             color: Colors.black),
@@ -268,7 +272,7 @@ class CustomDrawer extends StatelessWidget {
                       ),
                       ListTile(
                         onTap: () {
-                          controller.closeDrawer();
+                          Get.to(() => AdminDenied());
                         },
                         leading: Icon(Iconsax.danger5, color: Colors.black),
                         title: Text('Denied',
@@ -276,7 +280,7 @@ class CustomDrawer extends StatelessWidget {
                       ),
                       ListTile(
                         onTap: () {
-                          controller.closeDrawer();
+                          Get.to(() => AdminCompanies());
                         },
                         leading: FaIcon(FontAwesomeIcons.buildingShield,
                             color: Colors.black),
@@ -285,7 +289,7 @@ class CustomDrawer extends StatelessWidget {
                       ),
                       ListTile(
                         onTap: () {
-                          controller.closeDrawer();
+                          Get.to(() => AdminJobs());
                         },
                         leading:
                             FaIcon(FontAwesomeIcons.box, color: Colors.black),

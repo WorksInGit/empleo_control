@@ -1,6 +1,9 @@
+import 'package:empleo_control/views/dashboard/admin_profile_edit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:iconsax/iconsax.dart';
 
 class AdminProfile extends StatelessWidget {
@@ -8,39 +11,113 @@ class AdminProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-           SizedBox(height: 10.h), // Adjusted with ScreenUtil
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(
-                      Iconsax.arrow_circle_left,
-                      size: 30.sp, // Adjusted with ScreenUtil
+    return SafeArea(
+      child: GestureDetector(
+        onTap: () {
+          return FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                 SizedBox(height: 10.h), // Adjusted with ScreenUtil
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        
+                        SizedBox(width: 100.w), // Adjusted with ScreenUtil
+                        Text(
+                          'Profile',
+                          style: GoogleFonts.poppins(
+                              fontSize: 20.sp, fontWeight: FontWeight.w500),
+                        ),
+                        SizedBox(width: 30.w), // Adjusted with ScreenUtil
+                        IconButton(
+                          onPressed: () {
+                            Get.to(() => AdminProfileEdit());
+                          },
+                          icon: Icon(
+                            Iconsax.edit5, size: 30.sp,) // Adjusted with ScreenUtil
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 70.h), // Adjusted with ScreenUtil
+                  CircleAvatar(
+                    radius: 60.r, // Adjusted with ScreenUtil
+                    backgroundImage: AssetImage('assets/images/james.png'),
+                  ),
+                   SizedBox(height: 20.h), // Adjusted with ScreenUtil
+                  Row(
+                    children: [
+                      SizedBox(width: 25.w), // Adjusted with ScreenUtil
+                      Text(
+                        'Name',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10.h), // Adjusted with ScreenUtil
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 30.w), // Adjusted with ScreenUtil
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                          label: Text(
+                            'James Micheal',
+                            style: GoogleFonts.poppins(fontWeight: FontWeight.w200),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: HexColor('4CA6A8')))),
                     ),
                   ),
-                  SizedBox(width: 30.w), // Adjusted with ScreenUtil
-                  Text(
-                    'Profile',
-                    style: GoogleFonts.poppins(
-                        fontSize: 20.sp, fontWeight: FontWeight.w500),
+                   SizedBox(height: 20.h), // Adjusted with ScreenUtil
+                  Row(
+                    children: [
+                      SizedBox(width: 25.w), // Adjusted with ScreenUtil
+                      Text(
+                        'Email',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w400),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 30.w), // Adjusted with ScreenUtil
-                  IconButton(
-                    onPressed: () {
-
-                    },
-                    icon: Icon(
-                      Iconsax.edit5, size: 30.sp,) // Adjusted with ScreenUtil
+                  SizedBox(height: 10.h), // Adjusted with ScreenUtil
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 30.w), // Adjusted with ScreenUtil
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                          label: Text(
+                            'james123@gmail.com',
+                            style: GoogleFonts.poppins(fontWeight: FontWeight.w200),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: HexColor('4CA6A8')))),
+                    ),
                   ),
-                ],
-              ),
-        ],
+                   SizedBox(height: 20.h), // Adjusted with ScreenUtil
+                  Row(
+                    children: [
+                      SizedBox(width: 25.w), // Adjusted with ScreenUtil
+                      Text(
+                        'Password',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10.h), // Adjusted with ScreenUtil
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 30.w), // Adjusted with ScreenUtil
+                    child: TextFormField(
+                      obscureText: true,
+                      decoration: InputDecoration(
+                          
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: HexColor('4CA6A8')))),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
