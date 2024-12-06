@@ -1,155 +1,146 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:get/get.dart';
+import 'package:empleo_control/controllers/profile_edit_controller.dart';
 
 class AdminProfileEdit extends StatelessWidget {
-  const AdminProfileEdit({super.key});
+  final ProfileEditController controller = Get.put(ProfileEditController());
+
+  AdminProfileEdit({super.key}) {
+    controller.loadProfileData(); // Load profile data on initialization
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: GestureDetector(
-        onTap: () {
-          return FocusScope.of(context).unfocus();
-        },
-        child: Scaffold(
-          backgroundColor: Colors.white,
-          body: SingleChildScrollView(
-            child: Stack(
-              children: [
-                Column(
-                  children: [
-                    SizedBox(height: 10.h), // Adjusted with ScreenUtil
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Edit Profile',
-                          style: GoogleFonts.poppins(
-                              fontSize: 20.sp, fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 70.h), // Adjusted with ScreenUtil
-                    CircleAvatar(
-                      radius: 60.r, // Adjusted with ScreenUtil
-                      backgroundImage: AssetImage('assets/images/james.png'),
-                    ),
-                    SizedBox(height: 20.h), // Adjusted with ScreenUtil
-                    Row(
-                      children: [
-                        SizedBox(width: 25.w), // Adjusted with ScreenUtil
-                        Text(
-                          'Name',
-                          style:
-                              GoogleFonts.poppins(fontWeight: FontWeight.w400),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10.h), // Adjusted with ScreenUtil
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 30.w), // Adjusted with ScreenUtil
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                            label: Text(
-                              'James Micheal',
-                              style: GoogleFonts.poppins(
-                                  fontWeight: FontWeight.w200),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: HexColor('4CA6A8')))),
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Obx(() => Scaffold(
+              backgroundColor: Colors.white,
+              body: controller.isLoading.value
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: HexColor('4CA6A8'),
                       ),
-                    ),
-                    SizedBox(height: 20.h), // Adjusted with ScreenUtil
-                    Row(
-                      children: [
-                        SizedBox(width: 25.w), // Adjusted with ScreenUtil
-                        Text(
-                          'Email',
-                          style:
-                              GoogleFonts.poppins(fontWeight: FontWeight.w400),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10.h), // Adjusted with ScreenUtil
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 30.w), // Adjusted with ScreenUtil
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                            label: Text(
-                              'james123@gmail.com',
-                              style: GoogleFonts.poppins(
-                                  fontWeight: FontWeight.w200),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: HexColor('4CA6A8')))),
-                      ),
-                    ),
-                    SizedBox(height: 20.h), // Adjusted with ScreenUtil
-                    Row(
-                      children: [
-                        SizedBox(width: 25.w), // Adjusted with ScreenUtil
-                        Text(
-                          'Password',
-                          style:
-                              GoogleFonts.poppins(fontWeight: FontWeight.w400),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10.h), // Adjusted with ScreenUtil
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 30.w), // Adjusted with ScreenUtil
-                      child: TextFormField(
-                        obscureText: true,
-                        decoration: InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: HexColor('4CA6A8')))),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 60.h,
-                    ),
-
-                    SizedBox(
-                      width: 200,
-                      height: 50,
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: HexColor('4CA6A8')),
-                          onPressed: () {},
-                          child: Text(
-                            'Save',
-                            style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20.sp),
-                          )),
                     )
-                  ],
-                ),
-                Padding(
-                    padding: EdgeInsets.only(left: 210.w, top: 190.h),
-                    child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Iconsax.camera5,
-                          color: HexColor('4CA6A8'),
-                          size: 40.sp,
-                        ))),
-              ],
+                  : SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          SizedBox(height: 10.h),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Edit Profile',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 70.h),
+                          Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
+                              CircleAvatar(
+                                radius: 60.r,
+                                backgroundImage: controller.photoUrl.value.isNotEmpty
+                                    ? NetworkImage(controller.photoUrl.value)
+                                    : const AssetImage('assets/images/james.png')
+                                        as ImageProvider,
+                              ),
+                              IconButton(
+                                onPressed: () async {
+                                  String newPhotoUrl = await controller.pickPhoto();
+                                  if (newPhotoUrl.isNotEmpty) {
+                                    controller.photoUrl.value = newPhotoUrl;
+                                  }
+                                },
+                                icon: Icon(
+                                  Iconsax.camera5,
+                                  color: HexColor('4CA6A8'),
+                                  size: 30.sp,
+                                ),
+                              )
+                            ],
+                          ),
+                          SizedBox(height: 20.h),
+                          _buildEditableField(
+                              label: "Name",
+                              value: controller.name.value,
+                              onChanged: (value) => controller.name.value = value),
+                          SizedBox(height: 20.h),
+                          _buildEditableField(
+                              label: "Email",
+                              value: controller.email.value,
+                              onChanged: (value) => controller.email.value = value),
+                          SizedBox(height: 20.h),
+                          _buildEditableField(
+                              label: "Password",
+                              value: controller.password.value,
+                              onChanged: (value) =>
+                                  controller.password.value = value,
+                              obscureText: true),
+                          SizedBox(height: 60.h),
+                          SizedBox(
+                            width: 200.w,
+                            height: 50.h,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: HexColor('4CA6A8')),
+                              onPressed: () => controller.saveProfileData(),
+                              child: Text(
+                                'Save',
+                                style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20.sp),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+            )),
+      ),
+    );
+  }
+
+  Widget _buildEditableField(
+      {required String label,
+      required String value,
+      required Function(String) onChanged,
+      bool obscureText = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            SizedBox(width: 25.w),
+            Text(
+              label,
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w400),
+            ),
+          ],
+        ),
+        SizedBox(height: 10.h),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 30.w),
+          child: TextFormField(
+            initialValue: value,
+            onChanged: onChanged,
+            obscureText: obscureText,
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: HexColor('4CA6A8')),
+              ),
             ),
           ),
         ),
-      ),
+      ],
     );
   }
 }

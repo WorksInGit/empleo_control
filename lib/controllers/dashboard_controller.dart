@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
 class DashboardController extends GetxController {
+  
   var usersCount = 0.obs;
   var jobsCount = 0.obs;
   var companiesCount = 0.obs;
@@ -19,6 +21,12 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     fetchData(); // Fetch data when the controller is initialized
+
+  }
+  Future<void> check() async {
+    await FirebaseFirestore.instance.collection('admin').add({
+      'Name': 'Google',
+    });
   }
 
 }

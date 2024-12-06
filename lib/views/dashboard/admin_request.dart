@@ -1,9 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:empleo_control/views/dashboard/admin_request_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hexcolor/hexcolor.dart';
 
 class AdminRequest extends StatelessWidget {
   const AdminRequest({super.key});
@@ -12,51 +13,86 @@ class AdminRequest extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Requests',
+            style: TextStyle(color: Colors.black),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          elevation: 0,
+          automaticallyImplyLeading: false,
+        ),
         backgroundColor: Colors.white,
-        body: Column(
-          children: [
-            SizedBox(
-              height: 20.h,
-            ),
-            Text(
-              'Request',
-              style: GoogleFonts.poppins(
-                  fontSize: 25.sp, fontWeight: FontWeight.w600),
-            ),
-            SizedBox(
-              height: 10.h,
-            ),
-            Expanded(
-                child: ListView.builder(
-              itemCount: 10,
+        body: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('companies')
+              .where('status', isEqualTo: 0)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                  child: CircularProgressIndicator(
+                color: HexColor('4CA6A8'),
+              ));
+            }
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  'Error loading requests.',
+                  style: TextStyle(color: Colors.red),
+                ),
+              );
+            }
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return Center(
+                child: Text(
+                  'No requests available.',
+                  style: TextStyle(fontSize: 18.sp),
+                ),
+              );
+            }
+            var requests = snapshot.data!.docs;
+            return ListView.builder(
+              itemCount: requests.length,
               itemBuilder: (context, index) {
+                var request = requests[index].data() as Map<String, dynamic>;
                 return Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 4.0, horizontal: 8.0),
                   child: ListTile(
                     onTap: () {
-                      Get.to(() => AdminRequestProfile());
+                      Get.to(() => AdminRequestProfile(), arguments: {
+                        'companyData': request,
+                        'docId': requests[index].id
+                      });
                     },
                     leading: CircleAvatar(
                       backgroundColor: Colors.transparent,
-                      backgroundImage: AssetImage('assets/icons/google.png'),
+                      backgroundImage: request['photoUrl'] != null
+                          ? NetworkImage(request['photoUrl'])
+                          : AssetImage('assets/icons/default_company.png')
+                              as ImageProvider,
                     ),
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Google'),
-                        Text(
-                          'Andheri, Mumbai',
-                          style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w300, fontSize: 15),
-                        )
-                      ],
+                    title: Text(
+                      request['companyName'] ?? 'Unnamed Company',
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w500, fontSize: 16),
                     ),
-                    trailing: Text('Software'),
+                    subtitle: Text(
+                      request['location'] ?? 'Location not specified',
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w300, fontSize: 14),
+                    ),
+                    trailing: Text(
+                      request['industry'] ?? 'Industry unknown',
+                      style: GoogleFonts.poppins(fontSize: 14),
+                    ),
                   ),
                 );
               },
-            ))
-          ],
+            );
+          },
         ),
       ),
     );
