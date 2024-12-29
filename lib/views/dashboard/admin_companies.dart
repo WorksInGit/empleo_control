@@ -1,18 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:empleo_control/controllers/search_controller.dart';
 import 'package:empleo_control/views/dashboard/admin_company_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hexcolor/hexcolor.dart';
 
 class AdminCompanies extends StatelessWidget {
-  const AdminCompanies({super.key});
+  AdminCompanies({super.key});
+
+  final AdminSearchController controller = Get.put(AdminSearchController());
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: GestureDetector(
         onTap: () {
-          return FocusScope.of(context).unfocus();
+          FocusScope.of(context).unfocus();
         },
         child: Scaffold(
           appBar: AppBar(
@@ -33,19 +38,33 @@ class AdminCompanies extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: TextField(
+                  controller: controller.searchController,
+                  focusNode: controller.focusNode,
+                  onChanged: controller.updateSearchQuery,
                   decoration: InputDecoration(
-                    label: const Text('Search here'),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15.r),
+                      borderSide: BorderSide(
+                        color: HexColor('4CA6A8'),
+                      ),
+                    ),
+                    label: Text(
+                      'Search here',
+                      style: GoogleFonts.poppins(color: Colors.black),
+                    ),
                     suffixIcon: const Icon(Icons.search),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide.none,
                     ),
-                    filled: true,
-                    fillColor: Colors.grey.shade200,
                   ),
                 ),
               ),
-              const Expanded(child: AdminAcceptedCompanies())
+              Expanded(
+                child: Obx(() => AdminAcceptedCompanies(
+                      stream: controller.getFilteredCompanies(),
+                    )),
+              ),
             ],
           ),
         ),
@@ -55,15 +74,14 @@ class AdminCompanies extends StatelessWidget {
 }
 
 class AdminAcceptedCompanies extends StatelessWidget {
-  const AdminAcceptedCompanies({super.key});
+  final Stream<QuerySnapshot> stream;
+
+  const AdminAcceptedCompanies({super.key, required this.stream});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('companies') // Replace with your collection name
-          .where('status', isEqualTo: 1) // Filter for approved companies
-          .snapshots(),
+      stream: stream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -73,7 +91,7 @@ class AdminAcceptedCompanies extends StatelessWidget {
             child: Text(
               'No approved companies found',
               style: GoogleFonts.poppins(
-                  fontSize: 16, fontWeight: FontWeight.w500),
+                  fontSize: 16.sp, fontWeight: FontWeight.w500),
             ),
           );
         }
@@ -87,8 +105,7 @@ class AdminAcceptedCompanies extends StatelessWidget {
             final companyName = company['companyName'] ?? 'N/A';
             final companyLocation = company['location'] ?? 'N/A';
             final companyType = company['industry'] ?? 'N/A';
-            final companyLogo =
-                company['photoUrl'] ?? ''; // Assuming logo is a URL
+            final companyLogo = company['photoUrl'] ?? '';
 
             return Padding(
               padding: const EdgeInsets.all(10.0),
@@ -97,7 +114,7 @@ class AdminAcceptedCompanies extends StatelessWidget {
                   Get.to(
                     AdminCompanyProfile(companyId: company.id),
                     transition: Transition.cupertino,
-                    duration: Duration(milliseconds: 500),
+                    duration: const Duration(milliseconds: 500),
                   );
                 },
                 leading: CircleAvatar(

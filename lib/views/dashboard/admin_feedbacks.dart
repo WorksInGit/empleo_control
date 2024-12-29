@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:empleo_control/controllers/feedback_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -66,23 +67,23 @@ class FeedbackCard extends StatelessWidget {
     }
     return Card(
       color: Colors.white,
-      margin: const EdgeInsets.all(12),
+      margin:  EdgeInsets.all(12.r),
       elevation: 5,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(10.r),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: EdgeInsets.all(12.0.r),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundImage: NetworkImage(feedback['profileUrl'] ??
-                  'https://www.w3schools.com/w3images/avatar2.png'),
-              backgroundColor: Colors.grey[200],
-            ),
-            const SizedBox(width: 12),
+    CircleAvatar(
+  backgroundColor: Colors.transparent,
+  radius: 30,
+  backgroundImage: (feedback['profileUrl'] != null && feedback['profileUrl'].isNotEmpty) 
+      ? NetworkImage(feedback['profileUrl']) 
+      : const AssetImage('assets/icons/person.png') as ImageProvider,
+),        const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

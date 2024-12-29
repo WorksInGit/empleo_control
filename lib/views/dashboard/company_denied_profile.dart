@@ -13,7 +13,7 @@ class CompanyDeniedProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-      String? email;
+    String? email;
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -110,10 +110,17 @@ class CompanyDeniedProfile extends StatelessWidget {
               },
             ),
             Padding(
-              padding: EdgeInsets.only(top: 670.h),
+              padding: EdgeInsets.only(top: 640.h),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  buildActionButton(
+                    icon: Iconsax.direct_inbox,
+                    label: 'EMAIL',
+                    onPressed: () {
+                      _openGmail(email!);
+                    },
+                  ),
                   buildActionButton(
                     icon: Iconsax.shield3,
                     label: 'VERIFY',
@@ -123,13 +130,6 @@ class CompanyDeniedProfile extends StatelessWidget {
                           .doc(companyId)
                           .update({'status': 1});
                       Navigator.pop(context);
-                    },
-                  ),
-                  buildActionButton(
-                    icon: Iconsax.direct_inbox,
-                    label: 'EMAIL',
-                    onPressed: () {
-                      _openGmail(email!);
                     },
                   ),
                 ],

@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:empleo_control/views/dashboard/company_denied_profile.dart';
+import 'package:empleo_control/views/dashboard/denied_job_profile.dart';
+import 'package:empleo_control/views/dashboard/denied_user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -106,7 +108,11 @@ class UserDenied extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.all(15.0),
               child: ListTile(
-                onTap: () {},
+                onTap: () {
+                  Get.to(DeniedUserProfile(user: user),
+                      transition: Transition.cupertino,
+                      duration: Duration(milliseconds: 500));
+                },
                 leading: CircleAvatar(
                   backgroundImage: profilePic.startsWith('http')
                       ? NetworkImage(profilePic)
@@ -268,7 +274,14 @@ class JobsDenied extends StatelessWidget {
                 padding: EdgeInsets.all(10.0.r),
                 child: ListTile(
                   onTap: () {
-                    // Define action when tapping on a job
+                    Get.to(() => DeniedApplyPage(
+                          jobId: deniedJobs[index],
+                        ),
+                        transition: Transition.cupertino,
+                        duration: Duration(
+                          milliseconds: 500
+                        )
+                        );
                   },
                   leading: CircleAvatar(
                     backgroundColor: Colors.transparent,

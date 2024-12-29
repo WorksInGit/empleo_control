@@ -13,9 +13,7 @@ class AdminProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Preload data when the widget is built
     controller.loadProfileData();
-
     return SafeArea(
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
@@ -67,6 +65,7 @@ class AdminProfile extends StatelessWidget {
                       ),
                       if (controller.photoUrl.isNotEmpty)
                         CircleAvatar(
+                          backgroundColor: Colors.white,
                           radius: 60.r,
                           backgroundImage:
                               NetworkImage(controller.photoUrl.value),

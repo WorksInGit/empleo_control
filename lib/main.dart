@@ -23,6 +23,9 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Empleo Control',
         home: SplashScreen(),
+         defaultTransition: Transition.noTransition, 
+        transitionDuration: Duration(milliseconds: 0),
+
       ),
     );
   }

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:empleo_control/controllers/search_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -8,159 +7,9 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class AdminJobs extends StatelessWidget {
-  AdminJobs({super.key});
-  final AdminSearchController controller = Get.put(AdminSearchController());
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: GestureDetector(
-        onTap: () {
-          return FocusScope.of(context).unfocus();
-        },
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            automaticallyImplyLeading: false,
-            title: Text(
-              'Jobs',
-              style: GoogleFonts.poppins(color: Colors.black),
-            ),
-            centerTitle: true,
-          ),
-          backgroundColor: Colors.white,
-          body: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.all(15.0),
-                child: TextField(
-                  controller: controller.searchController,
-                  focusNode: controller.focusNode,
-                  onChanged: (value) {
-                    controller.updateSearchQuery(value);
-                  },
-                  decoration: InputDecoration(
-                    label: Text(
-                      'Search here',
-                      style: GoogleFonts.poppins(color: Colors.black),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15.r),
-                      borderSide: BorderSide(color: HexColor('4CA6A8')),
-                    ),
-                    suffixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(borderSide: BorderSide.none),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Obx(() => StreamBuilder<QuerySnapshot>(
-                      stream: controller.getFilteredJobs(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                          return Center(
-                            child: Text(
-                              'No jobs found',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16.sp,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          );
-                        }
-                        final jobs = snapshot.data!.docs;
-                        return ListView.builder(
-                          itemCount: jobs.length,
-                          itemBuilder: (context, index) {
-                            final job = jobs[index];
-                            final jobTitle = job['jobName'] ?? 'N/A';
-                            final salary = job['salary'] ?? 'N/A';
-                            final employmentType = job['timing'] ?? 'N/A';
-                            final companyLogo =
-                                job['photoUrl'] ?? 'assets/icons/default.png';
-                            return Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: ListTile(
-                                onTap: () {
-                                  Get.to(
-                                    ApplyPage(jobId: job.id),
-                                    transition: Transition.cupertino,
-                                    duration: Duration(milliseconds: 500),
-                                  );
-                                },
-                                leading: CircleAvatar(
-                                  backgroundColor: Colors.transparent,
-                                  backgroundImage:
-                                      companyLogo.startsWith('http')
-                                          ? NetworkImage(companyLogo)
-                                          : AssetImage(companyLogo)
-                                              as ImageProvider,
-                                ),
-                                title: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          jobTitle,
-                                          style: GoogleFonts.poppins(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 14.sp,
-                                          ),
-                                        ),
-                                        Spacer(),
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.currency_rupee_sharp,
-                                              size: 17,
-                                              color: Colors.grey,
-                                            ),
-                                            Text(
-                                              '$salary/M',
-                                              style: GoogleFonts.poppins(
-                                                fontSize: 10.sp,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                    Text(
-                                      employmentType,
-                                      style: GoogleFonts.poppins(
-                                        fontWeight: FontWeight.w300,
-                                        fontSize: 12.sp,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    )),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ApplyPage extends StatelessWidget {
-  final String jobId;
-  const ApplyPage({super.key, required this.jobId});
+class DeniedApplyPage extends StatelessWidget {
+  final DocumentSnapshot jobId;
+  const DeniedApplyPage({super.key, required this.jobId});
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +18,7 @@ class ApplyPage extends StatelessWidget {
         backgroundColor: Colors.white,
         body: FutureBuilder<DocumentSnapshot>(
           future:
-              FirebaseFirestore.instance.collection('jobs').doc(jobId).get(),
+              FirebaseFirestore.instance.collection('jobs').doc(jobId.id).get(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
@@ -296,11 +145,11 @@ class ApplyPage extends StatelessWidget {
                             Expanded(
                               child: TabBarView(
                                 children: [
-                                  Description(
+                                  DeniedDescription(
                                     qualifications: qualifications,
                                     skills: skills,
                                   ),
-                                  AboutCompany(
+                                  DeniedAboutCompany(
                                       companyDescription:
                                           jobData['about'] ?? 'N/A'),
                                 ],
@@ -309,7 +158,6 @@ class ApplyPage extends StatelessWidget {
                           ],
                         ),
                       ),
-                      // Fixed Icons
                       Positioned(
                         top: 640.h,
                         left: 100.w,
@@ -351,7 +199,7 @@ class ApplyPage extends StatelessWidget {
                                 await FirebaseFirestore.instance
                                     .collection('jobs')
                                     .doc(id)
-                                    .update({'status': -1});
+                                    .update({'status': 1});
                                 Get.back();
                               },
                               icon: Icon(
@@ -360,7 +208,7 @@ class ApplyPage extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              'DENY',
+                              'VERIFY',
                               style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.bold),
                             ),
@@ -379,10 +227,10 @@ class ApplyPage extends StatelessWidget {
   }
 }
 
-class Description extends StatelessWidget {
+class DeniedDescription extends StatelessWidget {
   final List<String> qualifications;
   final List<String> skills;
-  const Description(
+  const DeniedDescription(
       {super.key, required this.qualifications, required this.skills});
 
   @override
@@ -449,9 +297,9 @@ class Description extends StatelessWidget {
   }
 }
 
-class AboutCompany extends StatelessWidget {
+class DeniedAboutCompany extends StatelessWidget {
   final String companyDescription;
-  const AboutCompany({super.key, required this.companyDescription});
+  const DeniedAboutCompany({super.key, required this.companyDescription});
 
   @override
   Widget build(BuildContext context) {

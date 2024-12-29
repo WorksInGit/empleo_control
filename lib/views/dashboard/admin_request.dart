@@ -37,7 +37,7 @@ class AdminRequest extends StatelessWidget {
               ));
             }
             if (snapshot.hasError) {
-              return Center(
+              return const Center(
                 child: Text(
                   'Error loading requests.',
                   style: TextStyle(color: Colors.red),
@@ -62,16 +62,19 @@ class AdminRequest extends StatelessWidget {
                       vertical: 4.0, horizontal: 8.0),
                   child: ListTile(
                     onTap: () {
-                      Get.to(() => AdminRequestProfile(), arguments: {
+                      Get.to(() => AdminRequestProfile(),
+                      transition: Transition.cupertino,
+                      duration: const Duration(milliseconds: 500)
+                      , arguments: {
                         'companyData': request,
-                        'docId': requests[index].id
+                        'docId': requests[index].id,
                       });
                     },
                     leading: CircleAvatar(
                       backgroundColor: Colors.transparent,
                       backgroundImage: request['photoUrl'] != null
                           ? NetworkImage(request['photoUrl'])
-                          : AssetImage('assets/icons/default_company.png')
+                          : const AssetImage('assets/icons/default_company.png')
                               as ImageProvider,
                     ),
                     title: Text(

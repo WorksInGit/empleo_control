@@ -9,6 +9,7 @@
 # packages, and plugins designed to encourage good coding practices.
 analyzer:
   errors:
+    library_private_types_in_public_api: ignore
     must_be_immutable: ignore
     use_key_in_widget_constructors: ignore
     use_super_parameters: ignore
