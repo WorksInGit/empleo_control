@@ -1,17 +1,19 @@
 import 'package:empleo_control/admin_login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/route_manager.dart';
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:empleo_control/views/custom_drawer.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 3), () {
-      Get.offAll(() => AdminLogin());
-    },);
+    Future.delayed(const Duration(seconds: 1), () {
+      checkLoginStatus();
+    });
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -24,7 +26,7 @@ class SplashScreen extends StatelessWidget {
                 height: 200.r,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(50).r,
-                  image: DecorationImage(
+                  image: const DecorationImage(
                     image: AssetImage('assets/icons/logo.png'),
                     fit: BoxFit.cover,
                   ),
@@ -35,5 +37,16 @@ class SplashScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+Future<void> checkLoginStatus() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+  if (isLoggedIn) {
+    Get.offAll(() => CustomDrawer());
+  } else {
+    Get.offAll(() => AdminLogin());
   }
 }

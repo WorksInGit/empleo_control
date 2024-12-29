@@ -4,10 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:get/get.dart';
-import 'package:empleo_control/controllers/profile_edit_controller.dart';
+import 'package:empleo_control/controllers/profile_controller.dart';
 
 class AdminProfileEdit extends StatelessWidget {
-  final ProfileEditController controller = Get.put(ProfileEditController());
+  final ProfileController controller = Get.put(ProfileController());
 
   AdminProfileEdit({super.key}) {
     controller.loadProfileData(); // Load profile data on initialization
@@ -19,6 +19,16 @@ class AdminProfileEdit extends StatelessWidget {
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Obx(() => Scaffold(
+          appBar: AppBar(
+            surfaceTintColor: HexColor('4CA6A8'),
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.white,
+            title: Text('Edit Profile'),
+            titleTextStyle: GoogleFonts.poppins(color: Colors.black, fontSize: 20.sp,
+            fontWeight: FontWeight.w500
+            ),
+            centerTitle: true,
+          ),
               backgroundColor: Colors.white,
               body: controller.isLoading.value
                   ? Center(
@@ -29,19 +39,8 @@ class AdminProfileEdit extends StatelessWidget {
                   : SingleChildScrollView(
                       child: Column(
                         children: [
-                          SizedBox(height: 10.h),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Edit Profile',
-                                style: GoogleFonts.poppins(
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 70.h),
+                    
+                          SizedBox(height: 80.h),
                           Stack(
                             alignment: Alignment.bottomRight,
                             children: [

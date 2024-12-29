@@ -31,13 +31,13 @@ class AdminLogin extends StatelessWidget {
                     ),
                   ),
                 ),
-                Text('Fill your details to continue as admin'),
+                const Text('Fill your details to continue as admin'),
                 SizedBox(height: 30.h),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: TextFormField(
                     controller: controller.emailController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       label: Text('Email Address'),
                       prefixIcon: Icon(Icons.email),
                       border: OutlineInputBorder(borderSide: BorderSide.none),
@@ -49,7 +49,7 @@ class AdminLogin extends StatelessWidget {
                   child: TextFormField(
                     controller: controller.passwordController,
                     obscureText: true,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       label: Text('Password'),
                       prefixIcon: Icon(Icons.lock),
                       border: OutlineInputBorder(borderSide: BorderSide.none),
@@ -76,7 +76,7 @@ class AdminLogin extends StatelessWidget {
                       ),
                       child: Center(
                         child: controller.isLoading.value
-                            ? CircularProgressIndicator(
+                            ? const CircularProgressIndicator(
                                 color: Colors.white,
                               )
                             : Text(

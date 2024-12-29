@@ -4,14 +4,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class AdminCompanyProfile extends StatelessWidget {
-  const AdminCompanyProfile({super.key, required this.companyId});
+class CompanyDeniedProfile extends StatelessWidget {
+  const CompanyDeniedProfile({super.key, required this.companyId});
 
   final String companyId;
 
   @override
   Widget build(BuildContext context) {
+      String? email;
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -19,14 +21,16 @@ class AdminCompanyProfile extends StatelessWidget {
           children: [
             FutureBuilder<DocumentSnapshot>(
               future: FirebaseFirestore.instance
-                  .collection('companies') // Replace with your Firestore collection name
+                  .collection('companies')
                   .doc(companyId)
                   .get(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator(
-                  color: HexColor('4CA6A8'),
-                  ));
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: HexColor('4CA6A8'),
+                    ),
+                  );
                 }
 
                 if (!snapshot.hasData || !snapshot.data!.exists) {
@@ -41,7 +45,8 @@ class AdminCompanyProfile extends StatelessWidget {
                   );
                 }
 
-                final companyData = snapshot.data!.data() as Map<String, dynamic>;
+                final companyData =
+                    snapshot.data!.data() as Map<String, dynamic>;
                 final companyName = companyData['companyName'] ?? 'N/A';
                 final companyEmail = companyData['email'] ?? 'N/A';
                 final companyContact = companyData['contactNo'] ?? 'N/A';
@@ -49,76 +54,82 @@ class AdminCompanyProfile extends StatelessWidget {
                 final companyIndustry = companyData['industry'] ?? 'N/A';
                 final companyLocation = companyData['location'] ?? 'N/A';
                 final companyLogo = companyData['photoUrl'] ?? '';
-
-                return SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      SizedBox(height: 30.h),
-                      CircleAvatar(
-                        backgroundColor: Colors.transparent,
-                        radius: 60.r,
-                        backgroundImage: companyLogo.isNotEmpty
-                            ? NetworkImage(companyLogo)
-                            : const AssetImage('assets/icons/default_company.png')
-                                as ImageProvider,
-                      ),
-                      SizedBox(height: 20.h),
-                      Text(
-                        companyName,
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.sp,
+                email = companyEmail;
+                return GestureDetector(
+                  onTap: () {
+                    return FocusScope.of(context).unfocus();
+                  },
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        SizedBox(height: 30.h),
+                        CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          radius: 60.r,
+                          backgroundImage: companyLogo.isNotEmpty
+                              ? NetworkImage(companyLogo)
+                              : const AssetImage(
+                                      'assets/icons/default_company.png')
+                                  as ImageProvider,
                         ),
-                      ),
-                      SizedBox(height: 20.h),
-                      buildInfoSection(
-                        title: 'Email Address',
-                        value: companyEmail,
-                      ),
-                      buildInfoSection(
-                        title: 'Contact Number',
-                        value: companyContact,
-                      ),
-                      buildInfoSection(
-                        title: 'About',
-                        value: companyAbout,
-                        maxLines: 3,
-                      ),
-                      buildInfoSection(
-                        title: 'Industry',
-                        value: companyIndustry,
-                      ),
-                      buildInfoSection(
-                        title: 'Location',
-                        value: companyLocation,
-                      ),
-                      SizedBox(height: 110.h),
-                    ],
+                        SizedBox(height: 20.h),
+                        Text(
+                          companyName,
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.sp,
+                          ),
+                        ),
+                        SizedBox(height: 20.h),
+                        buildInfoSection(
+                          title: 'Email Address',
+                          value: companyEmail,
+                        ),
+                        buildInfoSection(
+                          title: 'Contact Number',
+                          value: companyContact,
+                        ),
+                        buildInfoSection(
+                          title: 'About',
+                          value: companyAbout,
+                          maxLines: 3,
+                        ),
+                        buildInfoSection(
+                          title: 'Industry',
+                          value: companyIndustry,
+                        ),
+                        buildInfoSection(
+                          title: 'Location',
+                          value: companyLocation,
+                        ),
+                        SizedBox(height: 110.h),
+                      ],
+                    ),
                   ),
                 );
               },
             ),
             Padding(
-              padding: EdgeInsets.only(top: 650.h),
+              padding: EdgeInsets.only(top: 670.h),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   buildActionButton(
-                    icon: Iconsax.call,
-                    label: 'CONTACT',
-                    onPressed: () {
-                      print('Contact button pressed for $companyId');
-                    },
-                  ),
-                  buildActionButton(
-                    icon: Iconsax.shield_cross,
-                    label: 'DENY',
+                    icon: Iconsax.shield3,
+                    label: 'VERIFY',
                     onPressed: () async {
                       await FirebaseFirestore.instance
                           .collection('companies')
                           .doc(companyId)
-                          .update({'status': -1});
+                          .update({'status': 1});
                       Navigator.pop(context);
+                    },
+                  ),
+                  buildActionButton(
+                    icon: Iconsax.direct_inbox,
+                    label: 'EMAIL',
+                    onPressed: () {
+                      _openGmail(email!);
                     },
                   ),
                 ],
@@ -157,10 +168,10 @@ class AdminCompanyProfile extends StatelessWidget {
           child: TextFormField(
             maxLines: maxLines,
             readOnly: true,
+            initialValue: value,
             decoration: InputDecoration(
-              label: Text(
-                value,
-                style: GoogleFonts.poppins(fontWeight: FontWeight.w200),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue),
               ),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: HexColor('4CA6A8')),
@@ -171,7 +182,7 @@ class AdminCompanyProfile extends StatelessWidget {
       ],
     );
   }
-  
+
   Widget buildActionButton({
     required IconData icon,
     required String label,
@@ -193,5 +204,19 @@ class AdminCompanyProfile extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  void _openGmail(String email) async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: email,
+      query: 'subject=Verification Needed&body=Hello,',
+    );
+
+    if (await canLaunchUrl(emailLaunchUri)) {
+      await launchUrl(emailLaunchUri);
+    } else {
+      throw 'Could not launch Gmail';
+    }
   }
 }

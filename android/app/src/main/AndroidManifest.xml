@@ -1,9 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="empleo_control"
+        android:label="E Control"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        >
+       
+        <meta-data
+        android:name="io.flutter.embedding.android.EnableImpeller"
+        android:value="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

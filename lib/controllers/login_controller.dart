@@ -1,17 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:empleo_control/admin_login.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:empleo_control/views/custom_drawer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController extends GetxController {
-  // Controllers for email and password fields
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  // Loading state
   RxBool isLoading = false.obs;
 
-  // Login method
+  Future<bool> isUserLoggedIn() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isLoggedIn') ?? false;
+  }
+
+  Future<void> saveLoginStatus(bool isLoggedIn) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', isLoggedIn);
+  }
+
+  Future<void> clearLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('isLoggedIn');
+  }
+
   Future<void> login() async {
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
@@ -26,7 +40,6 @@ class LoginController extends GetxController {
     }
 
     try {
-      // Set loading state to true
       isLoading.value = true;
 
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -36,11 +49,12 @@ class LoginController extends GetxController {
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
-        // Successful login
-        isLoading.value = false; // Stop loading
+        isLoading.value = false;
+        await saveLoginStatus(true);
+
         Get.off(
           CustomDrawer(),
-          transition: Transition.cupertino, // Specify the transition
+          transition: Transition.fadeIn, // Specify the transition
           duration:
               Duration(milliseconds: 500), // Optional: set animation duration
         );
@@ -54,12 +68,28 @@ class LoginController extends GetxController {
         );
       }
     } catch (e) {
-      isLoading.value = false; // Stop loading
+      isLoading.value = false;
       Get.snackbar(
         'Error',
         'An error occurred while logging in: $e',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
+  }
+
+  Future<void> checkLoginStatus() async {
+    bool loggedIn = await isUserLoggedIn();
+    if (loggedIn) {
+      Get.off(
+        CustomDrawer(),
+        transition: Transition.fadeIn,
+        duration: Duration(milliseconds: 500),
+      );
+    }
+  }
+
+  Future<void> logout() async {
+    await clearLoginStatus();
+    Get.offAll(AdminLogin());
   }
 }
